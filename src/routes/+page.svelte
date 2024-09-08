@@ -80,11 +80,66 @@
 	//   });
 
     //import Mouse from "$lib/Mouse.svelte";
-    import Motion from "$lib/Motion.svelte";
+    // import Motion from "$lib/Motion.svelte";
+	import Todo from "$lib/Todo.svelte";
+	import createTodoStore from "$lib/todo";
+
+	const todoStore = createTodoStore([
+		{ done: false, description: 'write some docs' },
+		{ done: false, description: 'start writing blog post' },
+		{ done: true, description: 'buy some milk' },
+		{ done: false, description: 'mow the lawn' },
+		{ done: false, description: 'feed the turtle' },
+		{ done: false, description: 'fix some bugs' }
+	]);
 </script>
 
+<style>
+	.board {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		max-width: 36em;
+	}
+
+	.board > input {
+		flex: 1;
+		font-size: 1.4rem;
+		grid-column: 1/3;
+		padding: 0.5em;
+	}
+
+</style>
+
 <section>
-    <Motion />
+<div class="board">
+	<input 
+		type="text" 
+		placeholder="write a todo..."
+		on:keydown={(e) => {
+			if (e.key !== "Enter") 
+				return;
+
+			const text = e.currentTarget.value;
+			if (text === "") {
+				alert("Can't add an empty todo...");
+				return;
+			}
+			
+			todoStore.add(text);
+			e.currentTarget.value = "";
+		}}
+	>
+	<div class="todos">
+		<h2>Todos:</h2>
+		<Todo store={todoStore} done={false}/>
+	</div>
+	<div class="todos">
+		<h2>Done:</h2>
+		<Todo store={todoStore} done={true}/>
+	</div>
+</div>
+	
+	<!-- <Motion /> -->
     <!--
     <Mouse />
 	<h2>Welcome to {name}</h2>
@@ -146,14 +201,6 @@
     <StoreInput />
     <StoreH1 /> 
     -->
-    
-
-
 </section>
 
-<style>
-    :global(body) {
-        background: darkslategray;
-        color: white;
-    }
-</style>
+
